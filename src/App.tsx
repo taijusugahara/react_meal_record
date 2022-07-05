@@ -29,7 +29,7 @@ function App() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Redux
+            ReduxOk
           </a>
           <span>, </span>
           <a
