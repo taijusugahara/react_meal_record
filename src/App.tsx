@@ -7,7 +7,6 @@ import OneDayMeal from './components/meal/OneDayMeal';
 import { BrowserRouter,Routes,Route } from "react-router-dom";
 
 const App:React.FC = ()=> {
-  console.log(localStorage.jwt_access_token)
   return (
     <>
     <BrowserRouter>
