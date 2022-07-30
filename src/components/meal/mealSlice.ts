@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import {MealState,OneDayMealType,OneMealType} from './types'
+import {MealType,OneDayMealType,OneMealType} from './types'
 import { RootState, AppThunk } from '../../app/store';
 import axios from "axios";
 import AxiosAuth from '../../utils/AxiosAuth';
-import { boolean } from 'yup';
+import {get_date_month_and_day_str, get_date_str} from "../../utils/Date"
 const apiUrl = process.env.REACT_APP_DEV_API_URL;
 const auth_axios = AxiosAuth()
 const one_meal:OneMealType = {
@@ -25,15 +25,31 @@ const one_day_meal:OneDayMealType =  {
   other : one_meal,
 }
 
-const initialState:MealState ={
+const initialState:MealType ={
   one_day_meal : one_day_meal,
   one_week_meal : [],
   one_month_meal : [],
+  date_info : {
+    full_date : get_date_str(new Date()),
+    month_and_day_date : get_date_month_and_day_str(new Date())
+  }
 }
 
 //typescript問題
 //axios responseとして型を設定してもその型通りのプロパティじゃなくてもresponseされてしまう。defaultではany。
 //解決策分からず。
+// export const OneDayMealIndexAsync = createAsyncThunk(
+//   'meal/one_day_meal_index',
+//   async (date: string)=>{
+//     const res = await auth_axios.get(`${apiUrl}v2/meal/index/day/${date}/`, {
+//       headers: {
+//         Authorization: `JWT ${localStorage.jwt_access_token}`,
+//       },
+//     });
+//     return res.data.data;
+//   }
+// )
+
 export const OneDayMealIndexAsync = createAsyncThunk(
   'meal/one_day_meal_index',
   async (date: string)=>{
@@ -99,21 +115,32 @@ export const MealImageDeleteAsync = createAsyncThunk(
   }
 )
 
+const dateChange = (state:MealType,date_change_type:string) => {
+  const the_date= state.date_info.full_date
+  const the_date_datetime = new Date(the_date)
+  let new_date = new Date()
+  if(date_change_type == "one_day_before"){
+    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate() - 1);
+  }
+  if(date_change_type == "one_day_after"){
+    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate() + 1);
+  }
+  const new_full_date = get_date_str(new_date)
+  const new_month_and_day_date = get_date_month_and_day_str(new_date)
+  state.date_info.full_date = new_full_date
+  state.date_info.month_and_day_date = new_month_and_day_date
+}
+
 export const MealSlice = createSlice({
   name: 'meal',
   initialState,
   reducers: {
-    // login: (state) => {
-    //   state.one_week_meal = []
-    // },
-    // logout: (state) => {
-    //   state.is_login = false
-    //   state.user_info = {
-    //     id : "",
-    //     email: "",
-    //     name: "",
-    //   }
-    // },
+    dateChangeToOneDayBefore: (state) => {
+      dateChange(state,"one_day_before")
+    },
+    dateChangeToOneDayAfter: (state) => {
+      dateChange(state,"one_day_after")
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -182,6 +209,12 @@ export const MealSlice = createSlice({
   },
 })
 
+export const {
+  dateChangeToOneDayBefore,
+  dateChangeToOneDayAfter,
+ } = MealSlice.actions;
+
 export const oneDayMealState = (state: RootState) => state.meal.one_day_meal
+export const theDateState = (state: RootState) => state.meal.date_info
 
 export default MealSlice.reducer;

@@ -1,9 +1,9 @@
 import {useAppSelector,useAppDispatch} from '../../app/hooks'
 import { 
   MealImageCreateAsync, MenuCreateAsync, MenuDeleteAsync,MealImageDeleteAsync,
-  oneDayMealState
+  oneDayMealState,
+  theDateState
  } from './mealSlice';
-import { today_str,yesterday_str,before_month_str } from '../../utils/Date';
 import { OneDayMealType,OneMealType,MenuType, MealImageType } from './types';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -15,7 +15,7 @@ const apiUrl = process.env.REACT_APP_DEV_API_URL;
 export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({props}) => {
   const dispatch = useAppDispatch()
   const one_day_meal = useAppSelector(oneDayMealState)
-  
+  const date = useAppSelector(theDateState)
   const validation = () =>
   Yup.object().shape({
     menu: Yup.string()
@@ -34,7 +34,7 @@ export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({p
     const uploadData = new FormData();
     uploadData.append("file", file, file.name);
     uploadData.append("meal_type", props.meal_type);
-    uploadData.append("date", today_str);
+    uploadData.append("date", date.full_date);
     await dispatch(MealImageCreateAsync({"meal_type":props.meal_type,upload_data:uploadData}))
   }
 
@@ -42,8 +42,7 @@ export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({p
     const uploadData = new FormData();
     uploadData.append("menu", menu);
     uploadData.append("meal_type", props.meal_type);
-    uploadData.append("date", today_str);
-    console.log(uploadData)
+    uploadData.append("date", date.full_date);
     await dispatch(MenuCreateAsync({"meal_type":props.meal_type,upload_data:uploadData}))
   }
 

@@ -1,7 +1,11 @@
-export interface MealState {
+export interface MealType {
   one_day_meal : OneDayMealType,
   one_week_meal : OneDayMealType[],
-  one_month_meal : OneDayMealType[]
+  one_month_meal : OneDayMealType[],
+  date_info : {
+    full_date : string,
+    month_and_day_date : string
+  }
 }
 
 export interface OneDayMealType {

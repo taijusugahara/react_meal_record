@@ -6,17 +6,17 @@ import {useAppSelector,useAppDispatch} from '../../app/hooks'
 import { loginAsync,userInfoAsync } from '../accounts/accountsSlice'
 import { 
   OneDayMealIndexAsync,
-  oneDayMealState
+  oneDayMealState,
+  theDateState
  } from './mealSlice';
-import { today_str,yesterday_str,before_month_str } from '../../utils/Date';
-import { object } from 'yup';
+
 import OneMeal from './OneMeal';
 export const OneDayMeal:React.FC = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate();
   const is_login = useAppSelector(isLogin)
   const one_day_meal = useAppSelector(oneDayMealState)
-  console.log(one_day_meal)
+  const date = useAppSelector(theDateState)
   useEffect(() => {
     if(is_login){
     }else{
@@ -26,7 +26,8 @@ export const OneDayMeal:React.FC = () => {
       get_user_info()
     }
     const get_one_day_meal_data = async() => {
-      await dispatch(OneDayMealIndexAsync(today_str))
+      // await dispatch(OneDayMealIndexAsync(date.full_date))
+      await dispatch(OneDayMealIndexAsync(date.full_date))
     }
     get_one_day_meal_data()
     console.log(is_login)
