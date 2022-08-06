@@ -1,21 +1,31 @@
-import {useEffect,useRef} from 'react'
+/** @jsxImportSource @emotion/react */
+import { css , keyframes }  from '@emotion/react'
+
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import LogoutIcon from '@mui/icons-material/Logout';
+import RestaurantIcon from '@mui/icons-material/Restaurant';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import {useAppSelector,useAppDispatch} from '../../app/hooks'
 import { useNavigate } from 'react-router-dom';
 
 import {isLogin,logout} from '../accounts/accountsSlice'
-import {OneDayMealIndexAsync,theDateState,dateChangeToOneDayBefore,dateChangeToOneDayAfter} from '../meal/mealSlice'
+import {OneDayMealIndexAsync,
+        theDateState,
+        spanTypeState,
+        dateChangeToOneDayBefore,
+        dateChangeToOneDayAfter,
+        dateChangeToToday,
+        OneWeekMealIndexAsync,
+        OneMonthMealIndexAsync} from '../meal/mealSlice'
 
 const NavBar:React.FC = () => {
-  const ref = useRef(true);
   const dispatch = useAppDispatch()
   const navigate = useNavigate();
   const date = useAppSelector(theDateState)
+  const span_type = useAppSelector(spanTypeState)
   const is_login = useAppSelector(isLogin)
   const Logout = async () => {
     await dispatch(logout())
@@ -23,49 +33,58 @@ const NavBar:React.FC = () => {
     localStorage.removeItem('jwt_refresh_token')
     navigate("/login")
   }
-  
-  useEffect(() => {
-    if (ref.current) {//初回時は処理させなくする
-      ref.current = false;
-      return;
-    }
-    const new_date = date.full_date
-    const get_new_date_meal = async () => {
-      await dispatch(OneDayMealIndexAsync(new_date))
-    }
-    get_new_date_meal()
-    
- }, [date.full_date])//sliceのstateのdateが変化したときに処理
 
   const DateChangeToOneDayBefore = async () => {
     await dispatch(dateChangeToOneDayBefore())
-    //続きはuseEffect(stateが変更されたときに呼び出される。変更したdateの食事を取得)
-    // dispatchの変更したstateが取得できなかったのでuseeffectで処理することにした。
+    await dispatch(OneDayMealIndexAsync())
   }
   const DateChangeToOneDayAfter = async () => {
     await dispatch(dateChangeToOneDayAfter())
-    //続きはuseEffect(stateが変更されたときに呼び出される。変更したdateの食事を取得)
+    await dispatch(OneDayMealIndexAsync())
+  }
+  const DateChangeToToday = async () => {
+    await dispatch(dateChangeToToday())
+    await dispatch(OneDayMealIndexAsync())
+    navigate("/one_day_meal")
+  }
+  const DateChangeToWeekDay = async () => {
+    await dispatch(OneWeekMealIndexAsync())
+    navigate("/one_week_meal")
+  }
+  const DateChangeToMonthDay = async () => {
+    await dispatch(OneMonthMealIndexAsync())
+    navigate("/one_month_meal")
   }
   
 
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static" sx={{backgroundColor:"#39094a"}}>
-          <Toolbar sx={{alignItems:"center", justifyContent:"space-between"}}>
-            <Typography variant="h6" component="div">
-              Meal Record
-            </Typography>
-            <div>
-              <p onClick={()=>{DateChangeToOneDayBefore()}}>previous</p>
+        <AppBar position="static" sx={{backgroundColor:"#39094a",padding:"10px 20px"}}>
+          <div css={nav_top}>
+            <RestaurantIcon />
+            <p onClick={()=>{DateChangeToOneDayBefore()}}>
+              <ArrowBackIcon sx={{cursor:"pointer"}} />
+            </p>
+
+            {span_type == "day" &&
               <p>{date.month_and_day_date}</p>
-              <p onClick={()=>{DateChangeToOneDayAfter()}}>next</p>
-            </div>
+            }
             
-            <Button color="inherit">
-            {is_login ? <p onClick={Logout}>Logout</p>:<></>}
-            </Button>
-          </Toolbar>
+
+            <p onClick={()=>{DateChangeToOneDayAfter()}}>
+              <ArrowForwardIcon sx={{cursor:"pointer"}} />
+            </p>
+            {is_login ? <p onClick={Logout}>
+              <LogoutIcon sx={{cursor: "pointer"}} />
+            </p>:<></>}
+          </div>
+          
+          <div css={nav_top}>
+            <p onClick={()=>{DateChangeToToday()}} css={cursor_pointer}>today</p>
+            <p onClick={()=>{DateChangeToWeekDay()}} css={cursor_pointer}>week</p>
+            <p onClick={()=>{DateChangeToMonthDay()}} css={cursor_pointer}>month</p>
+          </div>
         </AppBar>
       </Box>
     </>
@@ -73,3 +92,13 @@ const NavBar:React.FC = () => {
 }
 
 export default NavBar
+
+const nav_top = {
+  display : "flex",
+  alignItems : "center",
+  justifyContent : "space-between"
+}
+
+const cursor_pointer = {
+  cursor : "pointer"
+}

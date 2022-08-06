@@ -7,16 +7,15 @@ import { loginAsync,userInfoAsync } from '../accounts/accountsSlice'
 import { 
   OneDayMealIndexAsync,
   oneDayMealState,
-  theDateState
+  spanTypeChange
  } from './mealSlice';
 
-import OneMeal from './OneMeal';
+import OneMeal from './OneMeal';  
 export const OneDayMeal:React.FC = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate();
   const is_login = useAppSelector(isLogin)
   const one_day_meal = useAppSelector(oneDayMealState)
-  const date = useAppSelector(theDateState)
   useEffect(() => {
     if(is_login){
     }else{
@@ -26,26 +25,30 @@ export const OneDayMeal:React.FC = () => {
       get_user_info()
     }
     const get_one_day_meal_data = async() => {
-      // await dispatch(OneDayMealIndexAsync(date.full_date))
-      await dispatch(OneDayMealIndexAsync(date.full_date))
+      await dispatch(spanTypeChange("day"))
+      await dispatch(OneDayMealIndexAsync())
     }
     get_one_day_meal_data()
-    console.log(is_login)
-
   },[])
   const test = async() => {
     await dispatch(userInfoAsync()).unwrap();
   }
-  const hello = "hello"
   return (
     <>
       <ul>
-        {Object.keys(one_day_meal).map(key=>(
-          <li key={key}> {/* object展開するのにkeyがstringだとエラー出たため以下の形に */}
+        {/* このようにobject mapで展開したかったが、これだとdinnerが先に来てしまう。abc順。理由としてはgo側でmapを送るとき勝手にabc順になってしまうため。 */}
+        {/* object展開するのにkeyがstringだとエラー出たため以下の形に */}
+        {/* {Object.keys(one_day_meal).map(key=>(
+          <li key={key}>
            <p>{key}</p>
            <OneMeal key={key} props={{meal_type: key, meal: one_day_meal[key as keyof typeof one_day_meal]}}></OneMeal>
           </li>
-        ))}
+        ))} */}
+      
+        <OneMeal props={{meal_type: "morning", meal: one_day_meal["morning"]}}></OneMeal>
+        <OneMeal props={{meal_type: "lunch", meal: one_day_meal["lunch"]}}></OneMeal>
+        <OneMeal props={{meal_type: "dinner", meal: one_day_meal["dinner"]}}></OneMeal>
+        <OneMeal props={{meal_type: "other", meal: one_day_meal["other"]}}></OneMeal>
       </ul>
       <p>this is meal page</p>
       <p onClick={()=>{test()}}> user info</p>

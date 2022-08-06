@@ -1,11 +1,12 @@
 export interface MealType {
   one_day_meal : OneDayMealType,
-  one_week_meal : OneDayMealType[],
-  one_month_meal : OneDayMealType[],
+  one_week_meal : {[key in string]: OneDayMealType} ,
+  one_month_meal :{[key in string]: OneDayMealType} ,
   date_info : {
     full_date : string,
     month_and_day_date : string
-  }
+  },
+  span_type : string
 }
 
 export interface OneDayMealType {

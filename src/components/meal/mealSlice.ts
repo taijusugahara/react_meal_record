@@ -25,35 +25,59 @@ const one_day_meal:OneDayMealType =  {
   other : one_meal,
 }
 
+const many_day_meal:{ [key in string]: OneDayMealType } = {
+    "test" : one_day_meal
+}
+
 const initialState:MealType ={
   one_day_meal : one_day_meal,
-  one_week_meal : [],
-  one_month_meal : [],
+  one_week_meal : many_day_meal,
+  one_month_meal : many_day_meal,
   date_info : {
     full_date : get_date_str(new Date()),
     month_and_day_date : get_date_month_and_day_str(new Date())
-  }
+  },
+  span_type : ""// day or week or month
 }
 
 //typescript問題
-//axios responseとして型を設定してもその型通りのプロパティじゃなくてもresponseされてしまう。defaultではany。
-//解決策分からず。
-// export const OneDayMealIndexAsync = createAsyncThunk(
-//   'meal/one_day_meal_index',
-//   async (date: string)=>{
-//     const res = await auth_axios.get(`${apiUrl}v2/meal/index/day/${date}/`, {
-//       headers: {
-//         Authorization: `JWT ${localStorage.jwt_access_token}`,
-//       },
-//     });
-//     return res.data.data;
-//   }
-// )
+//axios responseとして型を設定してもその型通りのプロパティじゃなくてもresponseされてしまう。
+//解決策分からず。逆に恩恵もあり。weekやmonthは日付をkeyにしてるが何月何日を予め特定してkeyとして扱う事はできない。なので助かってる。が、これで正しいのかは分からない。
 
-export const OneDayMealIndexAsync = createAsyncThunk(
+export const OneDayMealIndexAsync = createAsyncThunk<OneDayMealType,undefined,{state:RootState}>(
   'meal/one_day_meal_index',
-  async (date: string)=>{
+  async (_,{getState})=>{//getStateでstateの内容を取得できる。これを利用するには上のように型定義必要
+    const state = getState()
+    const date = state.meal.date_info.full_date
     const res = await auth_axios.get(`${apiUrl}v2/meal/index/day/${date}/`, {
+      headers: {
+        Authorization: `JWT ${localStorage.jwt_access_token}`,
+      },
+    });
+    return res.data.data;
+  }
+)
+
+export const OneWeekMealIndexAsync = createAsyncThunk<{ [key in string]: OneDayMealType },undefined,{state:RootState}>(
+  'meal/one_week_meal_index',
+  async (_,{getState})=>{//getStateでstateの内容を取得できる。これを利用するには上のように型定義必要
+    const state = getState()
+    const date = state.meal.date_info.full_date
+    const res = await auth_axios.get(`${apiUrl}v2/meal/index/week/${date}/`, {
+      headers: {
+        Authorization: `JWT ${localStorage.jwt_access_token}`,
+      },
+    });
+    return res.data.data;
+  }
+)
+
+export const OneMonthMealIndexAsync = createAsyncThunk<{ [key in string]: OneDayMealType },undefined,{state:RootState}>(
+  'meal/one_month_meal_index',
+  async (_,{getState})=>{//getStateでstateの内容を取得できる。これを利用するには上のように型定義必要
+    const state = getState()
+    const date = state.meal.date_info.full_date
+    const res = await auth_axios.get(`${apiUrl}v2/meal/index/month/${date}/`, {
       headers: {
         Authorization: `JWT ${localStorage.jwt_access_token}`,
       },
@@ -115,7 +139,7 @@ export const MealImageDeleteAsync = createAsyncThunk(
   }
 )
 
-const dateChange = (state:MealType,date_change_type:string) => {
+const dateChange = (state:MealType,date_change_type:string,set_date?:string) => {
   const the_date= state.date_info.full_date
   const the_date_datetime = new Date(the_date)
   let new_date = new Date()
@@ -125,6 +149,10 @@ const dateChange = (state:MealType,date_change_type:string) => {
   if(date_change_type == "one_day_after"){
     new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate() + 1);
   }
+  if(set_date){
+    new_date = new Date(set_date)
+  }
+  // date_change_type == "today"の場合は最初に行ってるnew Date()でいいので処理しない
   const new_full_date = get_date_str(new_date)
   const new_month_and_day_date = get_date_month_and_day_str(new_date)
   state.date_info.full_date = new_full_date
@@ -141,17 +169,41 @@ export const MealSlice = createSlice({
     dateChangeToOneDayAfter: (state) => {
       dateChange(state,"one_day_after")
     },
+    dateChangeToToday: (state) => {
+      dateChange(state,"today")
+    },
+    dateChangeToSetTheDate: (state,action) => {
+      dateChange(state,"set",action.payload)
+    },
+    spanTypeChange: (state,action) => {
+      state.span_type = action.payload
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(OneDayMealIndexAsync.fulfilled, (state,action) => {
-        state.one_day_meal.morning =action.payload.morning
-        state.one_day_meal.lunch =action.payload.lunch
-        state.one_day_meal.dinner =action.payload.dinner
-        state.one_day_meal.other =action.payload.other
+        state.one_day_meal = action.payload
+        // state.one_day_meal.morning =action.payload.morning
+        // state.one_day_meal.lunch =action.payload.lunch
+        // state.one_day_meal.dinner =action.payload.dinner
+        // state.one_day_meal.other =action.payload.other
       })
       .addCase(OneDayMealIndexAsync.rejected, (state,action) => {
         alert('1日の食事情報の取得に失敗しました。')
+      })
+      .addCase(OneWeekMealIndexAsync.fulfilled, (state,action) => {
+        state.one_week_meal = action.payload
+      })
+      .addCase(OneWeekMealIndexAsync.rejected, (state,action) => {
+        alert('1週間の食事情報の取得に失敗しました。')
+      })
+      .addCase(OneMonthMealIndexAsync.fulfilled, (state,action) => {
+        state.one_month_meal = action.payload
+        const month = state.one_month_meal.key
+        console.log(month)
+      })
+      .addCase(OneMonthMealIndexAsync.rejected, (state,action) => {
+        alert('1ヶ月の食事情報の取得に失敗しました。')
       })
       .addCase(MealImageCreateAsync.fulfilled, (state,action) => {
         //meal_type stringのままではkey指定できないためas使う
@@ -187,34 +239,21 @@ export const MealSlice = createSlice({
         alert('画像の削除に失敗しました。')
       })
 
-      // .addCase(userCreateAsync.fulfilled, (state,action) => {
-      //   console.log('ユーザー作成に成功しました。')
-      //   state.is_login = true
-      // })
-      // .addCase(userCreateAsync.rejected, (state,action) => {
-      //   alert('ユーザー作成に失敗しました')
-      // })
-      // .addCase(userInfoAsync.fulfilled, (state,action) => {
-      //   console.log("user info")
-      //   state.is_login = true
-      //   state.user_info = {
-      //     id : action.payload.ID,
-      //     name : action.payload.name,
-      //     email : action.payload.email
-      //   }
-      // })
-      // .addCase(userInfoAsync.rejected, (state,action) => {
-      //   console.log("user info 取得に失敗しました。")
-      // })
   },
 })
 
 export const {
   dateChangeToOneDayBefore,
   dateChangeToOneDayAfter,
+  dateChangeToToday,
+  dateChangeToSetTheDate,
+  spanTypeChange
  } = MealSlice.actions;
 
 export const oneDayMealState = (state: RootState) => state.meal.one_day_meal
+export const oneWeekMealState = (state: RootState) => state.meal.one_week_meal
+export const oneMonthMealState = (state: RootState) => state.meal.one_month_meal
 export const theDateState = (state: RootState) => state.meal.date_info
+export const spanTypeState = (state: RootState) => state.meal.span_type
 
 export default MealSlice.reducer;
