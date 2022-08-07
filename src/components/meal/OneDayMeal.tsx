@@ -1,7 +1,5 @@
 import {useEffect} from 'react'
-import { isLogin } from '../accounts/accountsSlice';
 import {useAppSelector,useAppDispatch} from '../../app/hooks'
-import { userInfoAsync } from '../accounts/accountsSlice'
 import { 
   OneDayMealIndexAsync,
   oneDayMealState,
@@ -9,18 +7,13 @@ import {
  } from './mealSlice';
 
 import OneMeal from './OneMeal';
-export const OneDayMeal:React.FC = () => {
+import UseLoginCheckAndLoginDo from './customhook/useLoginCheckAndLoginDo';
+
+const OneDayMeal:React.FC = () => {
   const dispatch = useAppDispatch()
-  const is_login = useAppSelector(isLogin)
   const one_day_meal = useAppSelector(oneDayMealState)
+  UseLoginCheckAndLoginDo()//こっちが下より先に呼び出される
   useEffect(() => {
-    if(is_login){
-    }else{
-      const get_user_info = async() => {
-        await dispatch(userInfoAsync())
-      }
-      get_user_info()
-    }
     const get_one_day_meal_data = async() => {
       await dispatch(spanTypeChange("day"))
       await dispatch(OneDayMealIndexAsync())

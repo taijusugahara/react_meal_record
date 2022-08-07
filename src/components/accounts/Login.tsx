@@ -28,8 +28,6 @@ const Login:React.FC = () => {
   });
 
   const Submit = (values:LoginInput) => {
-    console.log('submit')
-    console.log(values)
     const login = async () => {
     try {
       //unwrap
@@ -38,7 +36,6 @@ const Login:React.FC = () => {
       navigate('/one_day_meal')
     }
     catch(error){}
-    
     }
     login()
   }

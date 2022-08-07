@@ -85,72 +85,72 @@ const NavBar:React.FC = () => {
     <>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" sx={{backgroundColor:"#39094a",padding:"10px 20px"}}>
-          <div css={nav_top}>
-            <RestaurantIcon />
-
-            <div>
-              {span_type == "day" &&
-                <p onClick={()=>{DateChangeToOneDayBefore()}}>
-                  <ArrowBackIcon sx={{cursor:"pointer"}} />
-                </p>
-              }
-              {span_type == "week" &&
-                <p onClick={()=>{DateChangeToBeforeWeekDay()}}>
-                  <ArrowBackIcon sx={{cursor:"pointer"}} />
-                </p>
-              }
-              {span_type == "month" &&
-                <p onClick={()=>{DateChangeToBeforeMonthDay()}}>
-                  <ArrowBackIcon sx={{cursor:"pointer"}} />
-                </p>
-              }
-              
-            </div>
-
-            <p>
-              {span_type == "day" &&
-                <span>{date.month_and_day_date}</span>
-              }
-              {span_type == "week" &&
-                <span>{date.first_week} ~ {date.end_week}</span>
-              }
-              {span_type == "month" &&
-                <span>{date.year_and_month}</span>
-              }
-            </p>
-
-            <div>
-              {span_type == "day" &&
-                <p onClick={()=>{DateChangeToOneDayAfter()}}>
-                  <ArrowForwardIcon sx={{cursor:"pointer"}} />
-                </p>
-              }
-              {span_type == "week" &&
-                <p onClick={()=>{DateChangeToAfterWeekDay()}}>
-                  <ArrowForwardIcon sx={{cursor:"pointer"}} />
-                </p>
-              }
-              {span_type == "month" &&
-                <p onClick={()=>{DateChangeToAfterMonthDay()}}>
-                  <ArrowForwardIcon sx={{cursor:"pointer"}} />
-                </p>
-              }
-              
-
-            </div>
-
-            
-            
-            {is_login ? <p onClick={Logout}>
-              <LogoutIcon sx={{cursor: "pointer"}} />
-            </p>:<></>}
-          </div>
           
-          <div css={nav_top}>
-            <p onClick={()=>{DateChangeToToday()}} css={cursor_pointer}>today</p>
-            <p onClick={()=>{DateChangeToWeekDay()}} css={cursor_pointer}>week</p>
-            <p onClick={()=>{DateChangeToMonthDay()}} css={cursor_pointer}>month</p>
-          </div>
+            {is_login ?
+            <>
+              <div css={nav_top}>
+                <RestaurantIcon />
+                <div>
+                  {span_type == "day" &&
+                    <p onClick={()=>{DateChangeToOneDayBefore()}}>
+                      <ArrowBackIcon sx={{cursor:"pointer"}} />
+                    </p>
+                  }
+                  {span_type == "week" &&
+                    <p onClick={()=>{DateChangeToBeforeWeekDay()}}>
+                      <ArrowBackIcon sx={{cursor:"pointer"}} />
+                    </p>
+                  }
+                  {span_type == "month" &&
+                    <p onClick={()=>{DateChangeToBeforeMonthDay()}}>
+                      <ArrowBackIcon sx={{cursor:"pointer"}} />
+                    </p>
+                  }
+                </div>
+
+                <p>
+                  {span_type == "day" &&
+                    <span>{date.month_and_day_date}</span>
+                  }
+                  {span_type == "week" &&
+                    <span>{date.first_week} ~ {date.end_week}</span>
+                  }
+                  {span_type == "month" &&
+                    <span>{date.year_and_month}</span>
+                  }
+                </p>
+
+                <div>
+                  {span_type == "day" &&
+                    <p onClick={()=>{DateChangeToOneDayAfter()}}>
+                      <ArrowForwardIcon sx={{cursor:"pointer"}} />
+                    </p>
+                  }
+                  {span_type == "week" &&
+                    <p onClick={()=>{DateChangeToAfterWeekDay()}}>
+                      <ArrowForwardIcon sx={{cursor:"pointer"}} />
+                    </p>
+                  }
+                  {span_type == "month" &&
+                    <p onClick={()=>{DateChangeToAfterMonthDay()}}>
+                      <ArrowForwardIcon sx={{cursor:"pointer"}} />
+                    </p>
+                  }
+                </div>
+
+                <p onClick={Logout}>
+                  <LogoutIcon sx={{cursor: "pointer"}} />
+                </p>
+              </div>
+
+              <div css={nav_top}>
+              <p onClick={()=>{DateChangeToToday()}} css={cursor_pointer}>today</p>
+              <p onClick={()=>{DateChangeToWeekDay()}} css={cursor_pointer}>week</p>
+              <p onClick={()=>{DateChangeToMonthDay()}} css={cursor_pointer}>month</p>
+              </div>
+            </>
+            
+            :<RestaurantIcon />}
         </AppBar>
       </Box>
     </>

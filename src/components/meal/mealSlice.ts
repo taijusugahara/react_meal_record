@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {MealType,OneDayMealType,OneMealType, OneMonthMealType, OneWeekMealType} from './types'
 import { RootState, AppThunk } from '../../app/store';
-import axios from "axios";
 import AxiosAuth from '../../utils/AxiosAuth';
 import {get_date_month_and_day_str, get_date_str} from "../../utils/Date"
 const apiUrl = process.env.REACT_APP_DEV_API_URL;
@@ -26,7 +25,7 @@ const one_day_meal:OneDayMealType =  {
 }
 
 const many_day_meal:{ [key in string]: OneDayMealType } = {
-    "test" : one_day_meal
+  "test" : one_day_meal
 }
 
 const initialState:MealType ={
@@ -45,7 +44,7 @@ const initialState:MealType ={
 
 //typescript問題
 //axios responseとして型を設定してもその型通りのプロパティじゃなくてもresponseされてしまう。
-//解決策分からず。逆に恩恵もあり。weekやmonthは日付をkeyにしてるが何月何日を予め特定してkeyとして扱う事はできない。なので助かってる。が、これで正しいのかは分からない。
+//解決策分からず。逆に恩恵もあり。weekやmonthは日付をkeyにしてるが何月何日を予め特定してkeyとして扱う事はできない。key名不明はtypescriptでもいけるが、key数が不明の場合はどう書いていいのか分からなかった。なので助かってる。が、これで正しいのかは分からない。
 
 export const OneDayMealIndexAsync = createAsyncThunk<OneDayMealType,undefined,{state:RootState}>(
   'meal/one_day_meal_index',
