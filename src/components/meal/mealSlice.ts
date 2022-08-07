@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import {MealType,OneDayMealType,OneMealType} from './types'
+import {MealType,OneDayMealType,OneMealType, OneMonthMealType, OneWeekMealType} from './types'
 import { RootState, AppThunk } from '../../app/store';
 import axios from "axios";
 import AxiosAuth from '../../utils/AxiosAuth';
@@ -35,7 +35,10 @@ const initialState:MealType ={
   one_month_meal : many_day_meal,
   date_info : {
     full_date : get_date_str(new Date()),
-    month_and_day_date : get_date_month_and_day_str(new Date())
+    month_and_day_date : get_date_month_and_day_str(new Date()),
+    first_week : "",
+    end_week : "",
+    year_and_month : "",
   },
   span_type : ""// day or week or month
 }
@@ -58,7 +61,7 @@ export const OneDayMealIndexAsync = createAsyncThunk<OneDayMealType,undefined,{s
   }
 )
 
-export const OneWeekMealIndexAsync = createAsyncThunk<{ [key in string]: OneDayMealType },undefined,{state:RootState}>(
+export const OneWeekMealIndexAsync = createAsyncThunk<OneWeekMealType,undefined,{state:RootState}>(
   'meal/one_week_meal_index',
   async (_,{getState})=>{//getStateでstateの内容を取得できる。これを利用するには上のように型定義必要
     const state = getState()
@@ -68,11 +71,11 @@ export const OneWeekMealIndexAsync = createAsyncThunk<{ [key in string]: OneDayM
         Authorization: `JWT ${localStorage.jwt_access_token}`,
       },
     });
-    return res.data.data;
+    return res.data;
   }
 )
 
-export const OneMonthMealIndexAsync = createAsyncThunk<{ [key in string]: OneDayMealType },undefined,{state:RootState}>(
+export const OneMonthMealIndexAsync = createAsyncThunk<OneMonthMealType,undefined,{state:RootState}>(
   'meal/one_month_meal_index',
   async (_,{getState})=>{//getStateでstateの内容を取得できる。これを利用するには上のように型定義必要
     const state = getState()
@@ -82,7 +85,7 @@ export const OneMonthMealIndexAsync = createAsyncThunk<{ [key in string]: OneDay
         Authorization: `JWT ${localStorage.jwt_access_token}`,
       },
     });
-    return res.data.data;
+    return res.data;
   }
 )
 
@@ -144,10 +147,22 @@ const dateChange = (state:MealType,date_change_type:string,set_date?:string) => 
   const the_date_datetime = new Date(the_date)
   let new_date = new Date()
   if(date_change_type == "one_day_before"){
-    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate() - 1);
+    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate()-1);
   }
-  if(date_change_type == "one_day_after"){
-    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate() + 1);
+  else if(date_change_type == "one_day_after"){
+    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate()+1);
+  }
+  else if(date_change_type == "before_week"){
+    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate()-7);
+  }
+  else if(date_change_type == "after_week"){
+    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth(), the_date_datetime.getDate()+7);
+  }
+  else if(date_change_type == "before_month"){
+    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth()-1, the_date_datetime.getDate());
+  }
+  else if(date_change_type == "after_month"){
+    new_date = new Date(the_date_datetime.getFullYear(), the_date_datetime.getMonth()+1, the_date_datetime.getDate());
   }
   if(set_date){
     new_date = new Date(set_date)
@@ -175,6 +190,18 @@ export const MealSlice = createSlice({
     dateChangeToSetTheDate: (state,action) => {
       dateChange(state,"set",action.payload)
     },
+    dateChangeToBeforeWeek:(state) => {
+      dateChange(state,"before_week")
+    },
+    dateChangeToAfterWeek:(state) => {
+      dateChange(state,"after_week")
+    },
+    dateChangeToBeforeMonth:(state) => {
+      dateChange(state,"before_month")
+    },
+    dateChangeToAfterMonth:(state) => {
+      dateChange(state,"after_month")
+    },
     spanTypeChange: (state,action) => {
       state.span_type = action.payload
     },
@@ -183,24 +210,32 @@ export const MealSlice = createSlice({
     builder
       .addCase(OneDayMealIndexAsync.fulfilled, (state,action) => {
         state.one_day_meal = action.payload
-        // state.one_day_meal.morning =action.payload.morning
-        // state.one_day_meal.lunch =action.payload.lunch
-        // state.one_day_meal.dinner =action.payload.dinner
-        // state.one_day_meal.other =action.payload.other
       })
       .addCase(OneDayMealIndexAsync.rejected, (state,action) => {
         alert('1日の食事情報の取得に失敗しました。')
       })
       .addCase(OneWeekMealIndexAsync.fulfilled, (state,action) => {
-        state.one_week_meal = action.payload
+        state.one_week_meal = action.payload.data
+        const first_week_date = action.payload.first_week_date
+        const end_week_date = action.payload.end_week_date
+        const first_week_datetime = new Date(first_week_date)
+        const end_week_datetime = new Date(end_week_date)
+        const first_week_month_and_day = get_date_month_and_day_str(first_week_datetime)
+        const end_week_month_and_day = get_date_month_and_day_str(end_week_datetime)
+
+        state.date_info.first_week = first_week_month_and_day
+        state.date_info.end_week = end_week_month_and_day
+        state.date_info.full_date = first_week_date
       })
       .addCase(OneWeekMealIndexAsync.rejected, (state,action) => {
         alert('1週間の食事情報の取得に失敗しました。')
       })
       .addCase(OneMonthMealIndexAsync.fulfilled, (state,action) => {
-        state.one_month_meal = action.payload
-        const month = state.one_month_meal.key
-        console.log(month)
+        state.one_month_meal = action.payload.data
+        const first_month_date = action.payload.first_month_date
+        const first_month_datetime = new Date(first_month_date)
+        state.date_info.year_and_month = first_month_datetime.getFullYear() + "年" + (first_month_datetime.getMonth()+1) + '月'
+        state.date_info.full_date = first_month_date
       })
       .addCase(OneMonthMealIndexAsync.rejected, (state,action) => {
         alert('1ヶ月の食事情報の取得に失敗しました。')
@@ -238,7 +273,6 @@ export const MealSlice = createSlice({
       .addCase(MealImageDeleteAsync.rejected, (state,action) => {
         alert('画像の削除に失敗しました。')
       })
-
   },
 })
 
@@ -247,6 +281,10 @@ export const {
   dateChangeToOneDayAfter,
   dateChangeToToday,
   dateChangeToSetTheDate,
+  dateChangeToBeforeMonth,
+  dateChangeToAfterMonth,
+  dateChangeToBeforeWeek,
+  dateChangeToAfterWeek,
   spanTypeChange
  } = MealSlice.actions;
 

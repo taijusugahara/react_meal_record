@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+import { css , keyframes }  from '@emotion/react'
 import {useEffect} from 'react'
 import { isLogin } from '../accounts/accountsSlice';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +12,8 @@ import {
   spanTypeChange
  } from './mealSlice';
 import ManyDaysMeal from './ManyDaysMeal';
-import {get_date_month_and_day_str, get_date_str} from "../../utils/Date"
+import {get_date_month_and_day_str} from "../../utils/Date"
+import commonsStyle from '../common/css';
 
 export const OneDayMeal:React.FC = () => {
   const dispatch = useAppDispatch()
@@ -43,11 +46,11 @@ export const OneDayMeal:React.FC = () => {
       {Object.keys(one_month_meal).map(key=>(
         <li key={key}> {/* object展開するのにkeyがstringだとエラー出たため以下の形に */}
           <div style={{"display":"flex", "alignItems":"center", "padding":"20px 0"}}>
-            <hr style={{"flex" : 1}} />
-            <p onClick={()=>toDatePage(key)}>
+            <hr style={{"flex" : 1,"color":"#c3c3c3"}} />
+            <p css={commonsStyle.dateLink} onClick={()=>toDatePage(key)}>
               <strong>{get_date_month_and_day_str(new Date(key))}</strong>
             </p>
-            <hr style={{"flex" : 1}} />
+            <hr style={{"flex":1,"color":"#c3c3c3"}} />
           </div>
           
           <ManyDaysMeal key={key} props={one_month_meal[key as keyof typeof one_month_meal]}/>

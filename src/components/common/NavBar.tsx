@@ -19,7 +19,11 @@ import {OneDayMealIndexAsync,
         dateChangeToOneDayAfter,
         dateChangeToToday,
         OneWeekMealIndexAsync,
-        OneMonthMealIndexAsync} from '../meal/mealSlice'
+        OneMonthMealIndexAsync,
+        dateChangeToBeforeMonth,
+        dateChangeToAfterMonth,
+        dateChangeToBeforeWeek,
+        dateChangeToAfterWeek} from '../meal/mealSlice'
 
 const NavBar:React.FC = () => {
   const dispatch = useAppDispatch()
@@ -55,6 +59,26 @@ const NavBar:React.FC = () => {
     await dispatch(OneMonthMealIndexAsync())
     navigate("/one_month_meal")
   }
+  const DateChangeToBeforeWeekDay = async () => {
+    await dispatch(dateChangeToBeforeWeek())
+    await dispatch(OneWeekMealIndexAsync())
+    navigate("/one_week_meal")
+  }
+  const DateChangeToAfterWeekDay = async () => {
+    await dispatch(dateChangeToAfterWeek())
+    await dispatch(OneWeekMealIndexAsync())
+    navigate("/one_week_meal")
+  }
+  const DateChangeToBeforeMonthDay = async () => {
+    await dispatch(dateChangeToBeforeMonth())
+    await dispatch(OneMonthMealIndexAsync())
+    navigate("/one_month_meal")
+  }
+  const DateChangeToAfterMonthDay = async () => {
+    await dispatch(dateChangeToAfterMonth())
+    await dispatch(OneMonthMealIndexAsync())
+    navigate("/one_month_meal")
+  }
   
 
   return (
@@ -63,18 +87,60 @@ const NavBar:React.FC = () => {
         <AppBar position="static" sx={{backgroundColor:"#39094a",padding:"10px 20px"}}>
           <div css={nav_top}>
             <RestaurantIcon />
-            <p onClick={()=>{DateChangeToOneDayBefore()}}>
-              <ArrowBackIcon sx={{cursor:"pointer"}} />
+
+            <div>
+              {span_type == "day" &&
+                <p onClick={()=>{DateChangeToOneDayBefore()}}>
+                  <ArrowBackIcon sx={{cursor:"pointer"}} />
+                </p>
+              }
+              {span_type == "week" &&
+                <p onClick={()=>{DateChangeToBeforeWeekDay()}}>
+                  <ArrowBackIcon sx={{cursor:"pointer"}} />
+                </p>
+              }
+              {span_type == "month" &&
+                <p onClick={()=>{DateChangeToBeforeMonthDay()}}>
+                  <ArrowBackIcon sx={{cursor:"pointer"}} />
+                </p>
+              }
+              
+            </div>
+
+            <p>
+              {span_type == "day" &&
+                <span>{date.month_and_day_date}</span>
+              }
+              {span_type == "week" &&
+                <span>{date.first_week} ~ {date.end_week}</span>
+              }
+              {span_type == "month" &&
+                <span>{date.year_and_month}</span>
+              }
             </p>
 
-            {span_type == "day" &&
-              <p>{date.month_and_day_date}</p>
-            }
+            <div>
+              {span_type == "day" &&
+                <p onClick={()=>{DateChangeToOneDayAfter()}}>
+                  <ArrowForwardIcon sx={{cursor:"pointer"}} />
+                </p>
+              }
+              {span_type == "week" &&
+                <p onClick={()=>{DateChangeToAfterWeekDay()}}>
+                  <ArrowForwardIcon sx={{cursor:"pointer"}} />
+                </p>
+              }
+              {span_type == "month" &&
+                <p onClick={()=>{DateChangeToAfterMonthDay()}}>
+                  <ArrowForwardIcon sx={{cursor:"pointer"}} />
+                </p>
+              }
+              
+
+            </div>
+
             
-
-            <p onClick={()=>{DateChangeToOneDayAfter()}}>
-              <ArrowForwardIcon sx={{cursor:"pointer"}} />
-            </p>
+            
             {is_login ? <p onClick={Logout}>
               <LogoutIcon sx={{cursor: "pointer"}} />
             </p>:<></>}

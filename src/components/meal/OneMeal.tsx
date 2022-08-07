@@ -93,7 +93,7 @@ export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({p
   return (
     <div css={[meal_container,meal_border]}>
       <div css={meal_part_top}>
-      <p css={meal_type_name}>{props.meal_type}</p>
+      <p css={meal_type_name}><strong>{props.meal_type}</strong></p>
       {span_type == "day" &&
         <>
           <IconButton onClick={handleModalOpen}
@@ -263,7 +263,7 @@ export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({p
 export default OneMeal
 
 const meal_container = {
-  padding : "10px",
+  padding : "0 10px 10px 10px",
   maxWidth : "800px",
   margin : "0 auto"
 }
@@ -280,7 +280,8 @@ const meal_part_top = {
   alignItems : 'center'
 }
 const meal_type_name = {
-  width : "100px"
+  width : "100px",
+  padding : "10px"
 }
 const modal_body = {
   position: 'absolute',
@@ -289,6 +290,7 @@ const modal_body = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
+  overflowY: "scroll",
   bgcolor: 'background.paper',
   border: '1px solid #000',
 };
