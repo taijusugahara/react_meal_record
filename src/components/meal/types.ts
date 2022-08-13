@@ -51,7 +51,7 @@ export interface MenuType{
 
 export interface MealImageType{
   ID: number,
-  file : string,//url
+  fileurl : string,
   meal_id : number
 }
 

@@ -187,10 +187,16 @@ export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({p
                     <div css={meal_image_field}>
                       {props.meal.meal_images?.map((meal_image:MealImageType)=>(
                         <div css={meal_image_part} key={meal_image.ID}>
-                          <img css={meal_image_image} src={`${apiUrl}${meal_image.file}`} alt="image not found" />
-                          <div css={meal_image_delete_field} onClick={()=>meal_image_delete(meal_image.ID)}>
-                            <DeleteIcon sx={{color:"#ff6666",cursor:"pointer"}} />
+                          <img onClick={()=>{handleImageOpen(meal_image.fileurl)}} css={meal_image_image} src={meal_image.fileurl} alt="image not found" />
+                          <div css={meal_image_delete_field}>
+                            <DeleteIcon  onClick={()=>meal_image_delete(meal_image.ID)} sx={{color:"#ff6666",cursor:"pointer"}} />
                           </div>
+
+                          {ImageOpen &&
+                            <div css={image_open_field}>
+                              <img css={image_open_image} src={ImageUrl} />
+                            </div>
+                          }
                         </div>
                       ))}
                     </div>
@@ -231,7 +237,7 @@ export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({p
         <div css={meal_image_field}>
           {props.meal.meal_images?.map((meal_image:MealImageType)=>(
             <div key={meal_image.ID} css={meal_image_part} >
-              <img onClick={()=>{handleImageOpen(`${apiUrl}${meal_image.file}`)}} css={meal_image_image} src={`${apiUrl}${meal_image.file}`} alt="image not found" />
+              <img onClick={()=>{handleImageOpen(meal_image.fileurl)}} css={meal_image_image} src={meal_image.fileurl} alt="image not found" />
             </div>
           ))}
 
