@@ -316,7 +316,7 @@ const modal_close_icon = {
 
 const modal_content = {
   padding: "0 20px 20px 20px",
-  maxWidth: "200px",
+  maxWidth: "700px",
   margin: "0 auto"
 }
 
