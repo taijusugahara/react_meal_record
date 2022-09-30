@@ -21,6 +21,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ImageIcon from '@mui/icons-material/Image';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { maxWidth } from '@mui/system';
 
 export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({props}) => {
   const dispatch = useAppDispatch()
@@ -114,7 +115,7 @@ export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({p
               </div>
               
               
-              <div style={{padding:"0 50px 20px 50px"}}>
+              <div css={modal_content}>
               
               <Formik
                 initialValues={{menu:""}}
@@ -311,6 +312,12 @@ const modal_close_icon = {
   width : '40px',
   height : '40px',
   cursor : 'pointer'
+}
+
+const modal_content = {
+  padding: "0 20px 20px 20px",
+  maxWidth: "200px",
+  margin: "0 auto"
 }
 
 const input_field = {
