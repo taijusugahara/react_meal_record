@@ -3,7 +3,7 @@ import {MealType,OneDayMealType,OneMealType, OneMonthMealType, OneWeekMealType} 
 import { RootState, AppThunk } from '../../app/store';
 import AxiosAuth from '../../utils/AxiosAuth';
 import {get_date_month_and_day_str, get_date_str} from "../../utils/Date"
-const apiUrl = process.env.REACT_APP_DEV_API_URL;
+const apiUrl = process.env.REACT_APP_API_URL;
 const auth_axios = AxiosAuth()
 const one_meal:OneMealType = {
   ID : 0,
@@ -51,7 +51,7 @@ export const OneDayMealIndexAsync = createAsyncThunk<OneDayMealType,undefined,{s
   async (_,{getState})=>{//getStateでstateの内容を取得できる。これを利用するには上のように型定義必要
     const state = getState()
     const date = state.meal.date_info.full_date
-    const res = await auth_axios.get(`${apiUrl}v2/meal/index/day/${date}/`, {
+    const res = await auth_axios.get(`${apiUrl}/v2/meal/index/day/${date}/`, {
       headers: {
         Authorization: `JWT ${localStorage.jwt_access_token}`,
       },
@@ -65,7 +65,7 @@ export const OneWeekMealIndexAsync = createAsyncThunk<OneWeekMealType,undefined,
   async (_,{getState})=>{//getStateでstateの内容を取得できる。これを利用するには上のように型定義必要
     const state = getState()
     const date = state.meal.date_info.full_date
-    const res = await auth_axios.get(`${apiUrl}v2/meal/index/week/${date}/`, {
+    const res = await auth_axios.get(`${apiUrl}/v2/meal/index/week/${date}/`, {
       headers: {
         Authorization: `JWT ${localStorage.jwt_access_token}`,
       },
@@ -79,7 +79,7 @@ export const OneMonthMealIndexAsync = createAsyncThunk<OneMonthMealType,undefine
   async (_,{getState})=>{//getStateでstateの内容を取得できる。これを利用するには上のように型定義必要
     const state = getState()
     const date = state.meal.date_info.full_date
-    const res = await auth_axios.get(`${apiUrl}v2/meal/index/month/${date}/`, {
+    const res = await auth_axios.get(`${apiUrl}/v2/meal/index/month/${date}/`, {
       headers: {
         Authorization: `JWT ${localStorage.jwt_access_token}`,
       },
@@ -91,7 +91,7 @@ export const OneMonthMealIndexAsync = createAsyncThunk<OneMonthMealType,undefine
 export const MealImageCreateAsync = createAsyncThunk(
   'meal/meal_image_create',
   async (param:{meal_type:string,upload_data:FormData})=>{
-    const res = await auth_axios.post(`${apiUrl}v2/meal/image_create`,param.upload_data, {
+    const res = await auth_axios.post(`${apiUrl}/v2/meal/image_create`,param.upload_data, {
       headers: {
         //別にmultipart/form-dataじゃなくていいみたい "Content-Type": "multipart/form-data; boundary=xxxyyyzzzBoun",
         "Content-Type": "application/json",
@@ -105,7 +105,7 @@ export const MealImageCreateAsync = createAsyncThunk(
 export const MenuCreateAsync = createAsyncThunk(
   'meal/menu_create',
   async (param:{meal_type:string,upload_data:FormData})=>{
-    const res = await auth_axios.post(`${apiUrl}v2/meal/menu_create/`,param.upload_data, {
+    const res = await auth_axios.post(`${apiUrl}/v2/meal/menu_create/`,param.upload_data, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `JWT ${localStorage.jwt_access_token}`,
@@ -118,7 +118,7 @@ export const MenuCreateAsync = createAsyncThunk(
 export const MenuDeleteAsync = createAsyncThunk(
   'meal/menu_delete',
   async (param:{meal_type:string,menu_id:number})=>{
-    const res = await auth_axios.delete(`${apiUrl}v2/meal/delete/menu/${param.menu_id}/`, {
+    const res = await auth_axios.delete(`${apiUrl}/v2/meal/delete/menu/${param.menu_id}/`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `JWT ${localStorage.jwt_access_token}`,
@@ -131,7 +131,7 @@ export const MenuDeleteAsync = createAsyncThunk(
 export const MealImageDeleteAsync = createAsyncThunk(
   'meal/meal_image_delete',
   async (param:{meal_type:string,meal_image_id:number})=>{
-    const res = await auth_axios.delete(`${apiUrl}v2/meal/delete/meal_image/${param.meal_image_id}/`, {
+    const res = await auth_axios.delete(`${apiUrl}/v2/meal/delete/meal_image/${param.meal_image_id}/`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `JWT ${localStorage.jwt_access_token}`,

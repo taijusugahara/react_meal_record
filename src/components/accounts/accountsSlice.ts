@@ -3,10 +3,7 @@ import { RootState } from '../../app/store';
 import axios from "axios";
 import AxiosAuth from '../../utils/AxiosAuth';
 import {AccountInputState,LoginInput,UserCreateInput} from './types'
-const apiUrl = process.env.REACT_APP_DEV_API_URL;
-const login_url = `${apiUrl}v1/account/login`
-const user_create_url = `${apiUrl}v1/account/register`
-const user_info_url = `${apiUrl}v2/user_info`
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const auth_axios = AxiosAuth()
 
@@ -22,7 +19,7 @@ const initialState:AccountInputState ={
 export const loginAsync = createAsyncThunk(
   'account/login',
   async (login_input: LoginInput) => {
-    const res = await axios.post(login_url, login_input, {
+    const res = await axios.post(`${apiUrl}/v1/account/login`, login_input, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -34,7 +31,7 @@ export const loginAsync = createAsyncThunk(
 export const userCreateAsync = createAsyncThunk(
   'account/register',
   async (params: UserCreateInput) => {
-    const res = await axios.post(user_create_url, params, {
+    const res = await axios.post(`${apiUrl}/v1/account/register`, params, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -46,7 +43,7 @@ export const userCreateAsync = createAsyncThunk(
 export const userInfoAsync = createAsyncThunk(
   'account/user_info',
   async () => {
-    const res = await auth_axios.get(user_info_url, {
+    const res = await auth_axios.get(`${apiUrl}/v2/user_info`, {
       headers: {
         Authorization: `JWT ${localStorage.jwt_access_token}`,
       },

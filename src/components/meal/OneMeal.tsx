@@ -22,8 +22,6 @@ import ImageIcon from '@mui/icons-material/Image';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-const apiUrl = process.env.REACT_APP_DEV_API_URL;
-
 export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({props}) => {
   const dispatch = useAppDispatch()
   const one_day_meal = useAppSelector(oneDayMealState)
@@ -214,6 +212,7 @@ export const OneMeal:React.FC<{props:{meal_type:string,meal:OneMealType}}> = ({p
                         <div key={menu.ID} css={menu_part}>
                           <p><strong>・</strong></p>
                           <p>{menu.name} </p>
+                          
                           <div style={{"paddingLeft": "20px"}} onClick={()=>menu_delete(menu.ID)}>
                             <DeleteIcon sx={{color:"#ff6666",cursor:"pointer"}} />
                           </div>

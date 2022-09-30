@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const AxiosAuth = () => {
-  const apiUrl = process.env.REACT_APP_DEV_API_URL;
-  const get_token_by_refresh_token_url = `${apiUrl}v2/get_token_by_refresh_token`
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const get_token_by_refresh_token_url = `${apiUrl}/v2/get_token_by_refresh_token`
   const instance = axios.create({});
 
   instance.interceptors.response.use(
