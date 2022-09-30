@@ -1,12 +1,9 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../app/store';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 import axios from "axios";
 import AxiosAuth from '../../utils/AxiosAuth';
 import {AccountInputState,LoginInput,UserCreateInput} from './types'
-const apiUrl = process.env.REACT_APP_DEV_API_URL;
-const login_url = `${apiUrl}v1/account/login`
-const user_create_url = `${apiUrl}v1/account/register`
-const user_info_url = `${apiUrl}v2/user_info`
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const auth_axios = AxiosAuth()
 
@@ -22,13 +19,11 @@ const initialState:AccountInputState ={
 export const loginAsync = createAsyncThunk(
   'account/login',
   async (login_input: LoginInput) => {
-    console.log(login_input)
-    const res = await axios.post(login_url, login_input, {
+    const res = await axios.post(`${apiUrl}/v1/account/login`, login_input, {
       headers: {
         "Content-Type": "application/json",
       },
     });
-    console.log(res)
     return res.data;
   }
 );
@@ -36,8 +31,7 @@ export const loginAsync = createAsyncThunk(
 export const userCreateAsync = createAsyncThunk(
   'account/register',
   async (params: UserCreateInput) => {
-    console.log(params)
-    const res = await axios.post(user_create_url, params, {
+    const res = await axios.post(`${apiUrl}/v1/account/register`, params, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -49,7 +43,7 @@ export const userCreateAsync = createAsyncThunk(
 export const userInfoAsync = createAsyncThunk(
   'account/user_info',
   async () => {
-    const res = await auth_axios.get(user_info_url, {
+    const res = await auth_axios.get(`${apiUrl}/v2/user_info`, {
       headers: {
         Authorization: `JWT ${localStorage.jwt_access_token}`,
       },
@@ -78,7 +72,6 @@ export const AccountSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loginAsync.fulfilled, (state,action) => {
-        console.log(action.payload.refresh_token)
         localStorage.setItem("jwt_access_token", action.payload.access_token);
         localStorage.setItem("jwt_refresh_token", action.payload.refresh_token);
         state.is_login = true
@@ -87,14 +80,12 @@ export const AccountSlice = createSlice({
         alert('loginに失敗しました')
       })
       .addCase(userCreateAsync.fulfilled, (state,action) => {
-        console.log('ユーザー作成に成功しました。')
         state.is_login = true
       })
       .addCase(userCreateAsync.rejected, (state,action) => {
         alert('ユーザー作成に失敗しました')
       })
       .addCase(userInfoAsync.fulfilled, (state,action) => {
-        console.log("user info")
         state.is_login = true
         state.user_info = {
           id : action.payload.ID,

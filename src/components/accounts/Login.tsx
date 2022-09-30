@@ -28,8 +28,6 @@ const Login:React.FC = () => {
   });
 
   const Submit = (values:LoginInput) => {
-    console.log('submit')
-    console.log(values)
     const login = async () => {
     try {
       //unwrap
@@ -38,7 +36,6 @@ const Login:React.FC = () => {
       navigate('/one_day_meal')
     }
     catch(error){}
-    
     }
     login()
   }
@@ -89,7 +86,7 @@ const Login:React.FC = () => {
             value={values.password}
             sx={{display:"block",mb:"30px"}}
         />
-        <Button disabled={!isValid} type="submit" name="submit" variant="contained" sx={{display:"block",width:"100%"}}>送信</Button>
+        <Button disabled={!isValid} type="submit" name="submit" variant="contained" sx={{display:"block",width:"100%",textAlign:"center"}}>送信</Button>
       </form>
       )}
       </Formik>

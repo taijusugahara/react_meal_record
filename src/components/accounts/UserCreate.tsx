@@ -108,7 +108,7 @@ const UserCreate:React.FC = () => {
             value={values.password}
             sx={{display:"block",mb:"30px"}}
         />
-      <Button disabled={!isValid} type="submit" variant="contained" sx={{display:"block",width:"100%"}}>送信</Button>
+      <Button disabled={!isValid} type="submit" variant="contained" sx={{display:"block",width:"100%",textAlign:"center"}}>送信</Button>
       </form>
       )}
       </Formik>
